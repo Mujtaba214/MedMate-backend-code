@@ -28,35 +28,44 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Validation
     if (!email || !password) {
-      res.status(400).json({ msg: "All fields required" });
+      return res.status(400).json({ msg: "All fields required" });
     }
 
     const result = await query("SELECT * FROM users WHERE email=$1", [email]);
     const user = result.rows[0];
 
     if (!user) {
-      res.status(400).json({ msg: "No user found" });
+      return res.status(400).json({ msg: "No user found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(400).json({ msg: "Invalid credentials" });
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    // Generate JWT token
     const token = jwt.sign(
       {
         id: user.id,
         email: user.email,
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "1h",
-      }
+      { expiresIn: "1h" }
     );
 
-    res.status(201).json({ token: token, userDetails: user });
+    return res.status(200).json({
+      token,
+      userDetails: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+      },
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Login error:", error);
+    return res.status(500).json({ msg: "Internal server error" });
   }
 };

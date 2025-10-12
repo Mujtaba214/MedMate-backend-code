@@ -1,29 +1,57 @@
 import * as Prescription from '../models/Prescription.js'
 
+
 export const addPrescription = async (req, res) => {
   try {
-    const { familyId, medicine, dosage, duration, doctor } = req.body;
-    const imageUrl = req.file ? `/uploads/prescriptions/${req.file.filename}` : null;
+    const userId = req.user.id; // from authMiddleware
+    const { medicine, dosage, duration, doctor, familyId } = req.body;
+    const image_url = req.file ? req.file.path : null; // ✅ changed from image → image_url
 
-    const prescription = await Prescription.createPrescription(familyId, {
-      medicine, dosage, duration, doctor, imageUrl
+    if (!medicine || !dosage || !duration || !doctor) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const newPrescription = await Prescription.createPrescription({
+      userId,
+      familyId: familyId || null,
+      medicine,
+      dosage,
+      duration,
+      doctor,
+      image_url: image_url, // ✅ match with DB column
     });
 
-    res.status(201).json(prescription);
+    res.status(201).json(newPrescription);
   } catch (error) {
+    console.error("❌ Error adding prescription:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
+
 
 export const getPrescriptions = async (req, res) => {
   try {
-    const { familyId } = req.params;
-    const prescriptions = await Prescription.getPrescriptionsByFamily(familyId, req.user.id);
-    res.json(prescriptions);
+    const userId = req.user.id; // from authMiddleware
+    const { familyId } = req.params; // optional
+
+    let prescriptions;
+
+    if (familyId) {
+      // Get prescriptions for a specific family member (and ensure ownership)
+      prescriptions = await Prescription.getPrescriptionsByFamily(familyId, userId);
+    } else {
+      // Get all prescriptions for the logged-in user (including family)
+      prescriptions = await Prescription.getAllPrescriptionsByUser(userId);
+    }
+
+    res.status(200).json(prescriptions);
   } catch (error) {
+    console.error("❌ Error fetching prescriptions:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 export const updatePrescription = async (req, res) => {
   try {

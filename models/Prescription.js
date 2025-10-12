@@ -1,23 +1,45 @@
 import { query } from "../db/db.js";
 
-export const createPrescription = async (
+export const createPrescription = async ({
+  userId,
   familyId,
-  { medicine, dosage, duration, doctor, imageUrl }
-) => {
+  medicine,
+  dosage,
+  duration,
+  doctor,
+  image_url, // ✅ match variable name
+}) => {
   const result = await query(
-    `INSERT INTO prescriptions (family_id, medicine, dosage, duration, doctor, image_url)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [familyId, medicine, dosage, duration, doctor, imageUrl]
+    `INSERT INTO prescriptions 
+   (user_id, family_id, medicine, dosage, duration, doctor, image_url)
+   VALUES ($1, $2, $3, $4, $5, $6, $7)
+   RETURNING *`,
+    [userId, familyId, medicine, dosage, duration, doctor, image_url]
   );
+
   return result.rows[0];
 };
 
 export const getPrescriptionsByFamily = async (familyId, userId) => {
   const result = await query(
-    `SELECT p.* FROM prescriptions p 
-     JOIN family_members f ON p.family_id = f.id 
-     WHERE f.id=$1 AND f.user_id=$2`,
+    `SELECT p.*
+     FROM prescriptions p
+     JOIN family_members f ON p.family_id = f.id
+     WHERE f.id = $1 AND f.user_id = $2
+     ORDER BY p.id DESC`,
     [familyId, userId]
+  );
+  return result.rows;
+};
+
+export const getAllPrescriptionsByUser = async (userId) => {
+  const result = await query(
+    `SELECT p.*
+     FROM prescriptions p
+     LEFT JOIN family_members f ON p.family_id = f.id
+     WHERE p.user_id = $1 OR f.user_id = $1
+     ORDER BY p.id DESC`,
+    [userId]
   );
   return result.rows;
 };
