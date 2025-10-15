@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import familyRoutes from "./routes/familyRoutes.js";
 import prescriptionRoutes from "./routes/prescriptionRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+
+import reminderRoutes from "./routes/reminderRoutes.js";
 import { fileURLToPath } from "url";
 import path from "path";
 
@@ -41,6 +44,8 @@ app.use("/uploads", express.static(path.join(__dirname, "./uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/family", familyRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/reminders", reminderRoutes);
+app.use("/api/profile", profileRoutes);
 
 // ✅ Basic test route
 app.get("/", (req, res) => {

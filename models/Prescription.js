@@ -1,4 +1,4 @@
-import { query } from "../db/db.js";
+import query from "../db/db.js";
 
 export const createPrescription = async ({
   userId,
@@ -31,6 +31,12 @@ export const getPrescriptionsByFamily = async (familyId, userId) => {
   );
   return result.rows;
 };
+
+export const getPrescriptionById = async (id) => {
+  const result = await query("SELECT * FROM prescriptions WHERE id = $1", [id]);
+  return result.rows[0];
+};
+
 
 export const getAllPrescriptionsByUser = async (userId) => {
   const result = await query(

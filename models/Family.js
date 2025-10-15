@@ -1,4 +1,4 @@
-import { query } from "../db/db.js";
+import query from "../db/db.js";
 
 export const createFamilyMember = async (
   userId,
@@ -38,4 +38,9 @@ export const deleteFamilyMember = async (id, userId) => {
     id,
     userId,
   ]);
+};
+
+export const getFamilyMemberById = async (id) => {
+  const result = await query("SELECT * FROM family_members WHERE id = $1", [id]);
+  return result.rows[0];
 };

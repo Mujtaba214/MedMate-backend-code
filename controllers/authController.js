@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { query } from "../db/db.js";
+import query from "../db/db.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -55,13 +55,12 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-
     return res.status(200).json({
       token,
       userDetails: {
         id: user.id,
         email: user.email,
-        full_name: user.full_name,
+        name: user.name, // ✅ Fix here
       },
     });
   } catch (error) {

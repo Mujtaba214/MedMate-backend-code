@@ -18,4 +18,5 @@ db.on("error", (err) => {
   process.exit(-1);
 });
 
-export const query = (text, params) => db.query(text, params);
+const query = (text, params) => db.query(text, params);
+export default query;
