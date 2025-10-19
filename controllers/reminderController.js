@@ -124,26 +124,3 @@ export const removeReminder = async (req, res) => {
   }
 };
 
-// ✅ Get all reminders for user
-// export const getAllReminders = async (user_id) => {
-//   try {
-//     const result = await query(
-//       `SELECT
-//          r.*,
-//          f.name AS family_member_name,
-//          p.medicine_name AS medicine_name
-//        FROM reminders r
-//        LEFT JOIN family_members f ON r.family_member_id = f.id
-//        LEFT JOIN prescriptions p ON r.prescription_id = p.id
-//        WHERE r.user_id = $1
-//        ORDER BY r.reminder_time ASC`,
-//       [user_id]
-//     );
-
-//     console.log("✅ Reminders fetched from DB:", result.rows);
-//     return result.rows;
-//   } catch (err) {
-//     console.error("❌ Error in getAllReminders:", err.message);
-//     throw err;
-//   }
-// };
