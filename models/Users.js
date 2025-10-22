@@ -4,7 +4,7 @@ import query from "../db/db.js";
 // Get user by ID
 export const getUserById = async (id) => {
   try {
-    const result = await query("SELECT * FROM users WHERE id = $1", [id]);
+    const result = await query("SELECT * FROM users WHERE id = $1 ", [id]);
     return result.rows[0];
   } catch (err) {
     console.error("❌ getUserById error:", err.message);
