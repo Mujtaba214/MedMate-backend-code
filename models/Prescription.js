@@ -7,7 +7,7 @@ export const createPrescription = async ({
   dosage,
   duration,
   doctor,
-  image_url, // ✅ match variable name
+  image_url, 
 }) => {
   const result = await query(
     `INSERT INTO prescriptions 

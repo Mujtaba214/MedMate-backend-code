@@ -29,7 +29,6 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({ msg: "All fields required" });
     }
@@ -46,7 +45,6 @@ export const login = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
       {
         id: user.id,
@@ -60,7 +58,7 @@ export const login = async (req, res) => {
       userDetails: {
         id: user.id,
         email: user.email,
-        name: user.name, // ✅ Fix here
+        name: user.name, 
       },
     });
   } catch (error) {

@@ -6,7 +6,7 @@ dotenv.config();
 const db = new pg.Client({
   connectionString: process.env.DB_URL,
   ssl: {
-    rejectUnauthorized: false, // required for Neon
+    rejectUnauthorized: false, 
   },
 });
 

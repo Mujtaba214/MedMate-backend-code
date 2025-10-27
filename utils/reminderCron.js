@@ -8,7 +8,6 @@ cron.schedule("*/5 * * * *", async () => {
   const now = new Date();
 
   try {
-    // 1️⃣ Fetch reminders due now or earlier
     const result = await query(
       `
       SELECT r.*, 
@@ -30,7 +29,6 @@ cron.schedule("*/5 * * * *", async () => {
       return;
     }
 
-    // 2️⃣ Send email for each reminder
     for (const reminder of result.rows) {
       const { id, user_email, medicine_name, family_member_name, reminder_time } = reminder;
 
@@ -48,14 +46,12 @@ Stay consistent with your health routine.
 – MedMate Team
       `;
 
-      // Send email dynamically
       await sendEmail({
         to: user_email,
         subject,
         text: message,
       });
 
-      // 3️⃣ Mark as sent
       await query("UPDATE reminders SET email_sent = true WHERE id = $1", [id]);
       console.log(`📨 Reminder email sent to ${user_email} for ${medicine_name}`);
     }

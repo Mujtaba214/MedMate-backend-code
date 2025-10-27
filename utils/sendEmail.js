@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 import schedule from "node-schedule";
 
-// ✅ Configure transporter once
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {

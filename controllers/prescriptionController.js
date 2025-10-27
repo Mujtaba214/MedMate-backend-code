@@ -4,9 +4,9 @@ import * as Prescription from '../models/Prescription.js'
 
 export const addPrescription = async (req, res) => {
   try {
-    const userId = req.user.id; // from authMiddleware
+    const userId = req.user.id; 
     const { medicine, dosage, duration, doctor, familyId } = req.body;
-    const image_url = req.file ? req.file.path : null; // ✅ changed from image → image_url
+    const image_url = req.file ? req.file.path : null; 
 
     if (!medicine || !dosage || !duration || !doctor) {
       return res.status(400).json({ error: "All fields are required" });
@@ -19,7 +19,7 @@ export const addPrescription = async (req, res) => {
       dosage,
       duration,
       doctor,
-      image_url: image_url, // ✅ match with DB column
+      image_url: image_url, 
     });
 
     res.status(201).json(newPrescription);
@@ -33,16 +33,14 @@ export const addPrescription = async (req, res) => {
 
 export const getPrescriptions = async (req, res) => {
   try {
-    const userId = req.user.id; // from authMiddleware
-    const { familyId } = req.params; // optional
+    const userId = req.user.id; 
+    const { familyId } = req.params; 
 
     let prescriptions;
 
     if (familyId) {
-      // Get prescriptions for a specific family member (and ensure ownership)
       prescriptions = await Prescription.getPrescriptionsByFamily(familyId, userId);
     } else {
-      // Get all prescriptions for the logged-in user (including family)
       prescriptions = await Prescription.getAllPrescriptionsByUser(userId);
     }
 
@@ -77,13 +75,11 @@ export const updatePrescription = async (req, res) => {
     const user_id = req.user.id;
     const { id } = req.params;
 
-    // ✅ If new image is uploaded
     let image_url = null;
     if (req.file) {
       image_url = `uploads/${req.file.filename}`;
     }
 
-    // ✅ Fetch current prescription first
     const existing = await query(
       "SELECT * FROM prescriptions WHERE id = $1 AND user_id = $2",
       [id, user_id]
@@ -93,7 +89,6 @@ export const updatePrescription = async (req, res) => {
       return res.status(404).json({ message: "Prescription not found" });
     }
 
-    // ✅ If no new image, keep the existing one
     const finalImage = image_url || existing.rows[0].image_url;
 
     const updated = await query(

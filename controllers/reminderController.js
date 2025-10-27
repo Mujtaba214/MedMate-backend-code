@@ -5,34 +5,37 @@ import {
   updateReminder,
   deleteReminder,
 } from "../models/Reminder.js";
-
-// import { createReminder } from "../models/Reminder.js";
 import { getUserById } from "../models/Users.js";
-import { getPrescriptionById } from "../models/Prescription.js"; // Create this
-import { getFamilyMemberById } from "../models/Family.js"; // Create this
+import { getPrescriptionById } from "../models/Prescription.js";
+import { getFamilyMemberById } from "../models/Family.js";
 import { scheduleReminderEmail } from "../utils/sendEmail.js";
 
 export const addReminder = async (req, res) => {
   try {
-    const { family_member_id, prescription_id, reminder_time, note } = req.body;
+    const {
+      family_member_id,
+      prescription_id,
+      reminder_time,
+      note,
+      repeat_type = "once",
+      repeat_days = [],
+    } = req.body;
     const user_id = req.user.id;
 
-    // ✅ 1️⃣ Create reminder in DB
     const reminder = await createReminder({
       user_id,
       family_member_id,
       prescription_id,
       reminder_time,
       note,
+      repeat_type,
+      repeat_days,
     });
 
-    // ✅ 2️⃣ Fetch related data
     const user = await getUserById(user_id);
     const prescription = await getPrescriptionById(prescription_id);
     const familyMember = await getFamilyMemberById(family_member_id);
 
-    // ✅ 3️⃣ Get medicine name correctly (column check)
-    // Adjust field if your DB column is "medicine" or "name"
     const medicineName =
       prescription?.medicine_name ||
       prescription?.medicine ||
@@ -41,8 +44,7 @@ export const addReminder = async (req, res) => {
 
     const familyMemberName = familyMember?.name || "";
 
-    // ✅ 4️⃣ Schedule the email
-    const emailScheduled = await scheduleReminderEmail(
+    await scheduleReminderEmail(
       user.email,
       medicineName,
       familyMemberName,
@@ -52,8 +54,7 @@ export const addReminder = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "✅ Reminder added successfully and email scheduled.",
-      emailScheduled,
+      message: "✅ Reminder added successfully.",
       data: reminder,
     });
   } catch (err) {
@@ -66,7 +67,6 @@ export const addReminder = async (req, res) => {
   }
 };
 
-// ✅ Get all reminders for logged-in user
 export const getReminders = async (req, res) => {
   try {
     const user_id = req.user.id;
@@ -80,7 +80,6 @@ export const getReminders = async (req, res) => {
   }
 };
 
-// ✅ Get single reminder
 export const getReminder = async (req, res) => {
   try {
     const reminder = await getReminderById(req.params.id);
@@ -98,7 +97,6 @@ export const getReminder = async (req, res) => {
   }
 };
 
-// ✅ Update reminder
 export const editReminder = async (req, res) => {
   try {
     const updated = await updateReminder(req.params.id, req.body);
@@ -111,7 +109,6 @@ export const editReminder = async (req, res) => {
   }
 };
 
-// ✅ Delete reminder
 export const removeReminder = async (req, res) => {
   try {
     const deleted = await deleteReminder(req.params.id);
@@ -123,4 +120,3 @@ export const removeReminder = async (req, res) => {
       .json({ success: false, message: "Error deleting reminder" });
   }
 };
-

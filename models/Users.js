@@ -1,7 +1,5 @@
-// models/User.js
 import query from "../db/db.js";
 
-// Get user by ID
 export const getUserById = async (id) => {
   try {
     const result = await query("SELECT * FROM users WHERE id = $1 ", [id]);
@@ -12,7 +10,6 @@ export const getUserById = async (id) => {
   }
 };
 
-// Update user by ID
 export const updateUserById = async (id, data) => {
   const { name, email, phone, date_of_birth, gender } = data;
   try {

@@ -1,7 +1,5 @@
-// controllers/profileController.js
 import { getUserById, updateUserById } from "../models/Users.js";
 
-// GET /api/profile/:id
 export const getProfile = async (req, res) => {
   try {
     const user = await getUserById(req.params.id);
@@ -15,7 +13,6 @@ export const getProfile = async (req, res) => {
   }
 };
 
-// PUT /api/profile/:id
 export const updateProfile = async (req, res) => {
   try {
     const updatedUser = await updateUserById(req.params.id, req.body);
