@@ -17,7 +17,10 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ✅ Make sure this is before any routes
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://medmateweb.netlify.app",
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
