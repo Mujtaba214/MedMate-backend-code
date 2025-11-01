@@ -1,12 +1,13 @@
+// controllers/prescriptionController.js
 import query from '../db/db.js';
-import * as Prescription from '../models/Prescription.js'
-
+import * as Prescription from '../models/Prescription.js';
 
 export const addPrescription = async (req, res) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
     const { medicine, dosage, duration, doctor, familyId } = req.body;
-    const image_url = req.file ? req.file.path : null; 
+
+    const image_url = req.file ? req.file.path : null; // Cloudinary auto returns image URL
 
     if (!medicine || !dosage || !duration || !doctor) {
       return res.status(400).json({ error: "All fields are required" });
@@ -19,22 +20,24 @@ export const addPrescription = async (req, res) => {
       dosage,
       duration,
       doctor,
-      image_url: image_url, 
+      image_url,
     });
 
-    res.status(201).json(newPrescription);
+    res.status(201).json({
+      success: true,
+      message: "✅ Prescription added successfully",
+      data: newPrescription,
+    });
   } catch (error) {
     console.error("❌ Error adding prescription:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-
-
 export const getPrescriptions = async (req, res) => {
   try {
-    const userId = req.user.id; 
-    const { familyId } = req.params; 
+    const userId = req.user.id;
+    const { familyId } = req.params;
 
     let prescriptions;
 
@@ -67,8 +70,6 @@ export const getPrescriptionById = async (req, res) => {
   }
 };
 
-
-
 export const updatePrescription = async (req, res) => {
   try {
     const { medicine, dosage, duration, doctor } = req.body;
@@ -77,7 +78,7 @@ export const updatePrescription = async (req, res) => {
 
     let image_url = null;
     if (req.file) {
-      image_url = `uploads/${req.file.filename}`;
+      image_url = req.file.path; // Cloudinary URL
     }
 
     const existing = await query(
